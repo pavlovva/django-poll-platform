@@ -44,11 +44,12 @@ class QuestionCondition(models.Model):
 
 
 class UserResponse(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    anonymous_user_id = models.CharField(max_length=100, null=True, blank=True)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.ForeignKey(AnswerOption, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ['user', 'poll', 'question']
+        unique_together = [['user', 'poll', 'question'], ['anonymous_user_id', 'poll', 'question']]

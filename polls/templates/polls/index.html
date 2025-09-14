@@ -1,0 +1,41 @@
+{% extends 'polls/base.html' %}
+
+{% block title %}Главная - Платформа опросов{% endblock %}
+
+{% block content %}
+<h1>Платформа опросов</h1>
+
+<div class="success" style="margin-bottom: 20px;">
+    <strong>Добро пожаловать!</strong> Вы можете проходить опросы как анонимный пользователь или войти в систему для дополнительных возможностей.
+</div>
+
+<div class="stats">
+    <h2>Доступные опросы</h2>
+    {% if polls %}
+        {% for poll in polls %}
+        <div class="question">
+            <div class="question-text">{{ poll.title }}</div>
+            <div class="stat-item">
+                <strong>Автор:</strong> {{ poll.author.username }}
+            </div>
+            <div class="stat-item">
+                <strong>Создан:</strong> {{ poll.created_at|date:"d.m.Y H:i" }}
+            </div>
+            <div class="stat-item">
+                <strong>Вопросов:</strong> {{ poll.questions.count }}
+            </div>
+            <div style="margin-top: 15px;">
+                <a href="/polls/{{ poll.id }}/" class="btn">Пройти опрос</a>
+                <a href="/polls/{{ poll.id }}/statistics/" class="btn" style="background-color: #28a745;">Статистика</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="error">Опросы не найдены</div>
+    {% endif %}
+</div>
+
+<div class="navigation">
+    <a href="/admin/" class="btn" style="background-color: #6c757d;">Админка</a>
+</div>
+{% endblock %}

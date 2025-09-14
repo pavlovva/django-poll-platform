@@ -1,0 +1,41 @@
+{% extends 'polls/base.html' %}
+
+{% block title %}Статистика: {{ poll.title }} - Платформа опросов{% endblock %}
+
+{% block content %}
+<h1>Статистика опроса: {{ poll.title }}</h1>
+
+<div class="stats">
+    <h2>Общая информация</h2>
+    <div class="stat-item">
+        <strong>Всего участников:</strong> {{ total_participants }}
+        {% if authenticated_users and anonymous_users %}
+        <br><small>(Аутентифицированных: {{ authenticated_users }}, Анонимных: {{ anonymous_users }})</small>
+        {% endif %}
+    </div>
+    
+    <h2>Статистика по вопросам</h2>
+    {% for question in questions %}
+    <div class="question">
+        <div class="question-text">{{ question.question_text }}</div>
+        <div class="stat-item">
+            <strong>Всего ответов:</strong> {{ question.total_responses }}
+        </div>
+        <div class="stat-item">
+            <strong>Популярные ответы:</strong>
+            <ul>
+                {% for stat in question.answer_statistics %}
+                <li>{{ stat.answer_text }}: {{ stat.count }} ответов</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="navigation">
+    <a href="/" class="btn" style="background-color: #28a745;">На главную страницу</a>
+    <a href="/polls/{{ poll.id }}/" class="btn">Пройти опрос</a>
+    <a href="/admin/" class="btn" style="background-color: #6c757d;">Админка</a>
+</div>
+{% endblock %}

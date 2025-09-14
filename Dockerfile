@@ -2,6 +2,7 @@ FROM python:3.13.7-slim
 
 RUN apt-get update && apt-get install -y \
     postgresql-client \
+    libpq-dev \
     gcc \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*

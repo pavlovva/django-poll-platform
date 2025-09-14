@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-4(gl$^$elg(3*(7rb1v&$)5mx2yltgqlt!+e@l@me+iwo%%t%d
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 
 
@@ -61,7 +61,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'poll_platform'),
         'USER': os.getenv('DB_USER', 'postgres'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
@@ -99,3 +99,8 @@ STATIC_URL = 'static/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+JSON_OPTIONS = {
+    'ensure_ascii': False,
+    'indent': 2
+}

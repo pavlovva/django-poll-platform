@@ -1,0 +1,108 @@
+{% extends 'polls/base.html' %}
+
+{% block title %}{{ poll.title }} - Платформа опросов{% endblock %}
+
+{% block content %}
+<h1>{{ poll.title }}</h1>
+
+<div id="poll-container">
+    <div id="loading">Загрузка вопроса...</div>
+</div>
+
+<script>
+let currentQuestion = null;
+let pollId = {{ poll.id }};
+
+function loadNextQuestion() {
+    fetch(`/api/polls/${pollId}/next-question/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.question) {
+                currentQuestion = data.question;
+                displayQuestion(data.question);
+            } else {
+                document.getElementById('poll-container').innerHTML = 
+                    '<div class="success">Опрос завершен! Спасибо за участие.</div>' +
+                    '<div style="text-align: center; margin-top: 20px;">' +
+                    '<a href="/" class="btn" style="background-color: #28a745;">На главную страницу</a>' +
+                    '<a href="/polls/' + pollId + '/statistics/" class="btn" style="background-color: #17a2b8; margin-left: 10px;">Посмотреть статистику</a>' +
+                    '</div>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('poll-container').innerHTML = 
+                '<div class="error">Ошибка загрузки: ' + error.message + '</div>';
+        });
+}
+
+function displayQuestion(question) {
+    const container = document.getElementById('poll-container');
+    let html = `
+        <div class="question">
+            <div class="question-text">${question.text}</div>
+            <form id="question-form">
+                <ul class="options">
+    `;
+    
+    question.options.forEach(option => {
+        html += `
+            <li class="option">
+                <label>
+                    <input type="radio" name="answer" value="${option.id}" required>
+                    ${option.text}
+                </label>
+            </li>
+        `;
+    });
+    
+    html += `
+                </ul>
+                <button type="submit" class="btn">Ответить</button>
+            </form>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    
+    document.getElementById('question-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitAnswer();
+    });
+}
+
+function submitAnswer() {
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+    if (!selectedAnswer) {
+        alert('Пожалуйста, выберите ответ');
+        return;
+    }
+    
+    const data = {
+        question_id: currentQuestion.id,
+        answer_id: parseInt(selectedAnswer.value)
+    };
+    
+    fetch(`/api/polls/${pollId}/submit-answer/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            loadNextQuestion();
+        } else {
+            alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+        }
+    })
+    .catch(error => {
+        alert('Ошибка отправки ответа: ' + error.message);
+    });
+}
+
+// Загружаем первый вопрос при загрузке страницы
+loadNextQuestion();
+</script>
+{% endblock %}
